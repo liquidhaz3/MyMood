@@ -1,0 +1,58 @@
+<div class="add-mood">
+  <header class="page-header">
+    <button class="back-button" type="button" aria-label="Wróć" (click)="goBack()">← Powrót</button>
+    <h1>Dodaj nastrój</h1>
+  </header>
+
+  <div class="mood-selection">
+    <h2>Czuję się ...</h2>
+    <div class="mood-options">
+      @for (mood of availableMoods(); track mood.id) {
+        <label class="mood-option" [class.selected]="selectedMoodId === mood.id">
+          <input 
+            type="radio" 
+            name="mood" 
+            [value]="mood.id"
+            [(ngModel)]="selectedMoodId"
+            class="mood-radio"
+            [attr.aria-checked]="selectedMoodId === mood.id"
+            [attr.aria-label]="mood.name"
+          >
+          <div class="mood-card" [style.border-color]="mood.color">
+            <span class="mood-emoji">{{ mood.emoji }}</span>
+            <span class="mood-name">{{ mood.name }}</span>
+          </div>
+        </label>
+      }
+    </div>
+  </div>
+
+  <div class="additional-info">
+    <div class="form-group">
+      <label for="note">Notatka (opcjonalnie)</label>
+      <textarea 
+        id="note"
+        [(ngModel)]="note"
+        placeholder="Dodaj notatkę o swoim nastroju..."
+        class="note-input"
+        rows="3"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button 
+      class="save-button"
+      [disabled]="!selectedMoodId"
+      (click)="saveMood()"
+    >
+      💾 Zapisz nastrój
+    </button>
+  </div>
+
+  @if (showSuccess) {
+    <div class="success-message">
+      ✅ Nastrój został zapisany!
+    </div>
+  }
+</div>

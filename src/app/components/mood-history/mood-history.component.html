@@ -1,0 +1,112 @@
+<div class="mood-history">
+  <header class="page-header">
+    <button class="back-button" (click)="goBack()">← Powrót</button>
+    <h1>Historia nastrojów</h1>
+  </header>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label for="dateFilter">Filtruj według daty:</label>
+      <select id="dateFilter" [(ngModel)]="selectedFilter" class="filter-select">
+        <option value="all">Wszystkie</option>
+        <option value="today">Dzisiaj</option>
+        <option value="week">Ostatni tydzień</option>
+        <option value="month">Ostatni miesiąc</option>
+      </select>
+    </div>
+    @if (filteredEntries().length > 0) {
+      <div class="danger-actions">
+        <button class="danger-button" (click)="deleteAllEntries()" title="Usuń wszystkie wpisy">
+          🗑️ Usuń wszystkie
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="entries-container">
+    @if (filteredEntries().length > 0) {
+      <div class="entries-list">
+        @for (entry of filteredEntries(); track entry.id) {
+          <div class="entry-card">
+            <div class="entry-header">
+              <div class="entry-mood">
+                @if (getMoodById(entry.moodId); as mood) {
+                  <span class="mood-emoji">{{ mood.emoji }}</span>
+                  <span class="mood-name">{{ mood.name }}</span>
+                }
+              </div>
+              <div class="entry-actions">
+                <button
+                  class="action-button edit"
+                  (click)="editEntry(entry)"
+                  title="Edytuj"
+                >
+                  ✏️
+                </button>
+                <button
+                  class="action-button delete"
+                  (click)="deleteEntry(entry.id)"
+                  title="Usuń"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+
+            <div class="entry-details">
+              <div class="entry-date">
+                📅 {{ formatDate(entry.date) }}
+              </div>
+
+              @if (editingEntryId === entry.id) {
+                <div class="edit-form"><br>
+                  <div class="form-row">
+                    <label for="mood-{{entry.id}}">Nastrój</label>
+                    <select id="mood-{{entry.id}}" [(ngModel)]="editMoodId">
+                      @for (m of availableMoods(); track m.id) {
+                        <option [ngValue]="m.id">{{ m.emoji }} {{ m.name }}</option>
+                      }
+                    </select>
+                  </div><br>
+                  <div class="form-row">
+                    <label for="note-{{entry.id}}">Notatka</label>
+                    <textarea id="note-{{entry.id}}" [(ngModel)]="editNote" rows="2" placeholder="Dodaj notatkę (opcjonalnie)"></textarea>
+                  </div><br>
+                  <div class="form-actions">
+                    <button class="action-button edit" (click)="saveEdit()" title="Zapisz">💾 Zapisz</button>
+                    <button class="action-button delete" (click)="cancelEdit()" title="Anuluj">✖️ Anuluj</button>
+                  </div>
+                </div>
+              } @else {
+                @if (entry.note) {
+                  <div class="entry-note">
+                    💭 {{ entry.note }}
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        <h3>Brak wpisów</h3>
+        <p>Nie znaleziono wpisów dla wybranego filtra.</p>
+        <button class="add-first-button" (click)="goToAddMood()">
+          ➕ Dodaj pierwszy nastrój
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="summary">
+    <h3>Podsumowanie</h3>
+    <div class="summary-stats">
+      <div class="summary-item">
+        <span class="summary-label">Łącznie wpisów:</span>
+        <span class="summary-value">{{ filteredEntries().length }}</span>
+      </div>
+    </div>
+  </div>
+</div>

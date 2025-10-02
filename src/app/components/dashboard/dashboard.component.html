@@ -1,0 +1,103 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <div class="header-top">
+      <button class="reset-moods-button" (click)="resetMoodDefinitions()" title="Resetuj definicje nastrojów">
+        🔄
+      </button>
+      <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="isDark() ? 'Przełącz na tryb jasny' : 'Przełącz na tryb ciemny'">
+        @if (isDark()) {
+          ☀️
+        } @else {
+          🌙
+        }
+      </button>
+    </div>
+    <h1 class="animated-mood" aria-live="polite" aria-atomic="true">
+      <span class="mood-rotator">
+        <span>Nastrój</span>
+        <span>Mood</span>
+        <span>Stimmung</span>
+        <span>Humør</span>
+        <span>Humeur</span>
+        <span>Mieliala</span>
+        <span>気分</span>
+        <span>Stemning</span>
+      </span>
+    </h1>
+    <p class="subtitle">Monitoruj swój nastrój</p>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ stats().totalEntries }}</div>
+      <div class="stat-label">Wpisy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats().mostCommonMood }}</div>
+      <div class="stat-label">Najczęstszy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value trend-{{ stats().moodTrend }}">
+        @switch (stats().moodTrend) {
+          @case ('improving') { 📈 }
+          @case ('declining') { 📉 }
+          @default { ➡️ }
+        }
+      </div>
+      <div class="stat-label">Trend</div>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Czuję się ...</h2>
+    <div class="mood-buttons">
+      @for (mood of availableMoods(); track mood.id) {
+        <button
+          class="mood-button"
+          [style.background-color]="mood.color"
+          (click)="addQuickMood(mood.id)"
+        >
+          <span class="mood-emoji">{{ mood.emoji }}</span>
+          <span class="mood-name">{{ mood.name }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="recent-entries">
+    <h2>Ostatnie wpisy</h2>
+    @if (recentEntries().length > 0) {
+      <div class="entries-list">
+        @for (entry of recentEntries(); track entry.id) {
+          <div class="entry-item">
+            <div class="entry-mood">
+              @if (getMoodById(entry.moodId); as mood) {
+                <span class="mood-emoji">{{ mood.emoji }}</span>
+                <span class="mood-name">{{ mood.name }}</span>
+              }
+            </div>
+            @if (entry.note) {
+              <div class="entry-note">{{ entry.note }}</div>
+            }
+            <div class="entry-date">
+              {{ formatDate(entry.date) }}
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <p>Brak wpisów. Dodaj swój pierwszy nastrój!</p>
+      </div>
+    }
+  </div>
+
+  <div class="navigation">
+    <a routerLink="/add-mood" class="nav-button primary">
+      ➕ Dodaj nastrój
+    </a>
+    <a routerLink="/history" class="nav-button secondary">
+      📊 Historia
+    </a>
+  </div>
+</div>
